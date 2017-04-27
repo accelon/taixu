@@ -1,6 +1,5 @@
 # taixu
-太虛大師於1947年圓寂，
-根據中華民國法律，作者在1962年6月9日或更早逝世者，其作品在臺灣地區已經屬於公有領域。
+
 
 [太虛大師全書XML](https://github.com/ksanaforge/taixu-corpus)
 [資料庫](http://ya.ksana.tw/taixu-corpus/taixu.cor)
