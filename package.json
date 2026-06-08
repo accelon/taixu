@@ -1,0 +1,21 @@
+{
+  "name": "taixu",
+  "version": "1.0.0",
+  "description": "太虛大師全書 [資料庫](http://ya.ksana.tw/taixu-corpus/taixu.cor) 由剎那工坊轉換互文資料庫。並以 [CC0](http://creativecommons.tw/cc0) 釋出。",
+  "main": "gen-md.js",
+  "type":"module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/accelon/taixu.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/accelon/taixu/issues"
+  },
+  "homepage": "https://github.com/accelon/taixu#readme"
+}

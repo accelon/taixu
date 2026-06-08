@@ -11,9 +11,27 @@ let activefolder='',activesubfolder='',articletree='';
 let filecount=0, vol=0,page=0,lineoff=0,mermaidline='';
 
 //todo , additional title  甲、xxxx  (two full-width space)  normal text
+
+const mermaidstyle=`%%{init: {
+  'flowchart': {
+    'nodeSpacing': 12 ,
+    'padding':1,
+    'rankSpacing': 12,
+    'useMaxWidth': false,
+    'diagramPadding': 0,
+    'nodePadding':1  ,
+    'labelPadding':1
+  }
+}}%%`
 const accelon3markdown=(content,tree,ignoreranges)=>{
-    console.log(ignoreranges)
     const out=[];
+    let igidx=-1, ignorestart=-1,ignoreend=-1;
+    if (ignoreranges.length){
+        igidx=0;
+        ignorestart=ignoreranges[igidx][0];
+        ignoreend=ignoreranges[igidx][1];
+    }
+
     let insertblockid=0,isheader=false,preformat=false,insertlineoff=0;
     //let hide=false;
     for (let i=0;i<content.length;i++) {
@@ -37,7 +55,7 @@ const accelon3markdown=(content,tree,ignoreranges)=>{
         } else {
             if (line.startsWith('<')){                
                 if (line.startsWith('<段')) {
-                    out[insertblockid] += ' ^'+vol.toString()+'p'+page.toString()+(insertlineoff?toBase26(insertlineoff||0):'');
+                    if(out[insertblockid]) out[insertblockid] += ' ^'+vol.toString()+'p'+page.toString()+(insertlineoff?toBase26(insertlineoff||0):'');
                     line=line.replace(/<段\/>/,'');
 
                     const reg=/^([一二三四五六七八九十甲乙丙丁戊己庚辛壬癸])、(.+?)　　/;
@@ -61,11 +79,16 @@ const accelon3markdown=(content,tree,ignoreranges)=>{
                     const png=m[1]
                     line='\n'+'[['+png+'|'+png.replace('images/','').replace('.png','')+']]';
                     const mermaidfile=png.replace('images/','mermaid/').replace('.png','.md');
-                    out.push(line)
                     if (fs.existsSync(mermaidfile)){
-                        const md=readTextContent(mermaidfile);
+                        out.push(line)
+                        line='';
+                        let md=readTextContent(mermaidfile);
+                        if (md.indexOf('%%{')===-1) {
+                            md=md.replace(/```mermaid\n/g,'```mermaid'+'\n'+mermaidstyle+'\n');
+                        }
                         mermaidline+='\n'+md+'\n';
                     } else {
+                        console.log('no mermaid', line)
                         mermaidline='';
                         preformat=true;
                     }
@@ -83,15 +106,27 @@ const accelon3markdown=(content,tree,ignoreranges)=>{
             insertlineoff=lineoff;
             insertblockid=out.length;
         }
+        if (ignorestart>0 && i>=ignorestart && i<=ignoreend) {
+            line='';
+        }
+        if (ignoreend >0 && i>ignoreend) {
+            igidx++;
+            if (igidx<ignoreranges.length) {
+                ignorestart=ignoreranges[igidx][0];
+                ignoreend=ignoreranges[igidx][1];
+            } else {
+                ignorestart=-1;
+                ignoreend=-1;
+            }
+        }
         if(line&&!mermaidline) out.push(line+(preformat?'':'●')); //add a marker to indicate normal text line break, will be removed later
-
     }
     return out.join('\n').replace(/●\n?/g,'').split(/\n/);
 }
 const processArticle=(title,content,articletree)=>{
     const folder=outfolder+activefolder+'/'+(activesubfolder?activesubfolder+'/':'');
     filecount++;
-    if (filecount>10) return;
+    if (filecount>11) return;
     const tree=articletree.split(',');
     const ignoreranges=ignores[title] || [];
     const md=accelon3markdown(content,tree,ignoreranges);
