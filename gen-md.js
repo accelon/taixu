@@ -113,6 +113,9 @@ const accelon3markdown=(title,content,tree)=>{
         if (removableTOC) {
             line='';
         }
+        line=line.replace(/<品>/g,'\n==');
+        line=line.replace(/<\/品>/g,'==\n');
+
         line=line.replace(/<偈>/g,'> ');
         line=line.replace(/<經文>/g,'> ');
         line=line.replace(/<\/經文>/g,'');
