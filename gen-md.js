@@ -115,6 +115,7 @@ const accelon3markdown=(title,content,tree)=>{
         }
         line=line.replace(/<品>/g,'\n==');
         line=line.replace(/<\/品>/g,'==\n');
+        line=line.replace(/<\/檔>/g,'');
 
         line=line.replace(/<偈>/g,'> ');
         line=line.replace(/<經文>/g,'> ');
@@ -166,6 +167,13 @@ const createfolders=(l)=>{
 for (let i=0;i<files.length;i++) {
     const filename=files[i];
     const rawlines=readTextLines(filename);
+    if (filename.endsWith('taixu12.xml')) {
+        const appendlines=readTextLines(filename.replace('12','13'));
+        appendlines.shift();appendlines.shift();appendlines.shift();//drop first 3 lines
+        rawlines.push(...appendlines);
+    }
+    if (filename.endsWith('taixu13.xml')) continue;//combined with taixu12
+
     let articlecontent=[];
     let title='header';
     for (let j=0;j<rawlines.length;j++) {
